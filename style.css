@@ -389,7 +389,7 @@ body {
 }
 
 .quest-controls .quest-action {
-    margin-left: auto;
+    margin-left: 0;
 }
 
 .quest-input {
