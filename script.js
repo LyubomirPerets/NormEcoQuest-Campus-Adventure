@@ -253,7 +253,7 @@ function updateCustomQuestInput(questId, key, value) {
     saveState();
 }
 
-function buildQuestControls(quest, button) {
+function buildQuestControls(quest) {
     const controls = document.createElement("div");
     controls.className = "quest-controls";
 
@@ -307,7 +307,6 @@ function buildQuestControls(quest, button) {
         });
     }
 
-    controls.appendChild(button);
     return controls;
 }
 
@@ -342,7 +341,7 @@ function renderQuests() {
             helper.className = "quest-helper";
             helper.textContent = quest.verificationFields ? "Log servings + proof." : "Log hours off.";
             copy.appendChild(helper);
-            card.appendChild(buildQuestControls(quest, button));
+            card.insertBefore(buildQuestControls(quest), button);
         }
 
         if (quest.type === "weekly") {
