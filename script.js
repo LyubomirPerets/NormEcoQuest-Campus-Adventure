@@ -152,12 +152,11 @@ function renderQuests() {
         title.textContent = quest.title;
         description.textContent = quest.description;
         impact.textContent = quest.impactText;
-        button.textContent = isCompleted ? "Quest completed" : "Complete quest";
-        button.disabled = isCompleted;
+        button.textContent = isCompleted ? "Undo quest" : "Complete quest";
         button.classList.toggle("is-complete", isCompleted);
         card.classList.toggle("completed", isCompleted);
 
-        button.addEventListener("click", () => completeQuest(quest.id));
+        button.addEventListener("click", () => toggleQuest(quest.id));
 
         questList.appendChild(fragment);
     });
@@ -277,27 +276,30 @@ function renderStats() {
     bossProgressFill.style.width = `${state.bossProgress}%`;
 }
 
-function completeQuest(questId) {
-    if (state.completedQuestIds.includes(questId)) {
-        return;
-    }
-
+function toggleQuest(questId) {
     const quest = quests.find((item) => item.id === questId);
     if (!quest) {
         return;
     }
 
+    const isCompleted = state.completedQuestIds.includes(questId);
+
     state = {
         ...state,
-        coins: state.coins + quest.coins,
-        xp: state.xp + quest.xp,
-        food: state.food + quest.impact.food,
-        energy: state.energy + quest.impact.energy,
-        water: state.water + quest.impact.water,
-        carbon: state.carbon + quest.impact.carbon,
-        bossProgress: Math.min(100, state.bossProgress + quest.impact.boss),
-        streak: state.streak + 1,
-        completedQuestIds: [...state.completedQuestIds, questId]
+        coins: Math.max(0, state.coins + (isCompleted ? -quest.coins : quest.coins)),
+        xp: Math.max(0, state.xp + (isCompleted ? -quest.xp : quest.xp)),
+        food: Math.max(0, state.food + (isCompleted ? -quest.impact.food : quest.impact.food)),
+        energy: Math.max(0, state.energy + (isCompleted ? -quest.impact.energy : quest.impact.energy)),
+        water: Math.max(0, state.water + (isCompleted ? -quest.impact.water : quest.impact.water)),
+        carbon: Math.max(0, state.carbon + (isCompleted ? -quest.impact.carbon : quest.impact.carbon)),
+        bossProgress: Math.max(
+            0,
+            Math.min(100, state.bossProgress + (isCompleted ? -quest.impact.boss : quest.impact.boss))
+        ),
+        streak: Math.max(1, state.streak + (isCompleted ? -1 : 1)),
+        completedQuestIds: isCompleted
+            ? state.completedQuestIds.filter((id) => id !== questId)
+            : [...state.completedQuestIds, questId]
     };
 
     renderAll();

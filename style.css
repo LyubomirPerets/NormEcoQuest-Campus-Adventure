@@ -384,6 +384,85 @@ body {
     font-size: 1rem;
 }
 
+.levelup-overlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(7, 16, 10, 0.66);
+    backdrop-filter: blur(6px);
+    z-index: 20;
+}
+
+.levelup-overlay[hidden] {
+    display: none;
+}
+
+.levelup-modal {
+    position: relative;
+    overflow: hidden;
+    width: min(100%, 460px);
+    padding: 28px;
+    border-radius: 28px;
+    border: 3px solid rgba(255, 203, 71, 0.9);
+    background: linear-gradient(180deg, rgba(28, 72, 38, 0.98), rgba(13, 38, 21, 0.98));
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+}
+
+.levelup-modal h2 {
+    margin: 8px 0 10px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2.4rem;
+}
+
+.levelup-modal p {
+    position: relative;
+    z-index: 1;
+}
+
+.levelup-button {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    border: 0;
+    border-radius: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, var(--gold-500), var(--gold-600));
+    color: var(--ink-900);
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgba(77, 55, 10, 0.6);
+}
+
+.confetti-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.confetti-piece {
+    position: absolute;
+    top: -16px;
+    width: 12px;
+    height: 22px;
+    border-radius: 999px;
+    opacity: 0.9;
+    animation: confetti-fall 1500ms linear forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    100% {
+        transform: translate3d(var(--drift, 0px), 360px, 0) rotate(520deg);
+    }
+}
+
 .stat-card h3 {
     font-size: 2rem;
     margin-top: 8px;
