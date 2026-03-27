@@ -299,8 +299,8 @@ body {
 .quest-card {
     display: grid;
     gap: 16px;
-    grid-template-columns: 1fr auto;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
     padding: 18px;
     transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 }
@@ -349,7 +349,9 @@ body {
 
 .quest-description,
 .quest-impact {
-    margin-bottom: 0;
+    margin: 6px 0 0;
+    font-size: 0.92rem;
+    line-height: 1.35;
 }
 
 .quest-action {
@@ -376,6 +378,18 @@ body {
     gap: 10px;
     align-items: center;
     margin-top: 12px;
+}
+
+.quest-copy {
+    width: 100%;
+}
+
+.quest-copy .quest-topline {
+    align-items: center;
+}
+
+.quest-controls .quest-action {
+    margin-left: auto;
 }
 
 .quest-input {
@@ -408,9 +422,10 @@ body {
 }
 
 .quest-helper {
-    margin-top: 8px;
-    font-size: 0.88rem;
-    color: rgba(251, 246, 232, 0.7);
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    color: rgba(251, 246, 232, 0.62);
 }
 
 .boss-track {
@@ -738,6 +753,10 @@ body {
     .leaderboard-row,
     .tier-row {
         grid-template-columns: 1fr;
+    }
+
+    .quest-controls .quest-action {
+        margin-left: 0;
     }
 
     .quest-action,
