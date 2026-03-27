@@ -74,18 +74,46 @@ const tiers = [
     }
 ];
 
+const rewardsCatalog = [
+    {
+        id: "library-late-pass",
+        title: "Library Late-Night Pass",
+        description: "Redeem for one extended study-space reservation window.",
+        cost: 20
+    },
+    {
+        id: "eco-sticker-pack",
+        title: "49er Eco Sticker Pack",
+        description: "Campus-themed sustainability stickers and badge swag.",
+        cost: 15
+    },
+    {
+        id: "campus-discount",
+        title: "Campus Cafe Discount",
+        description: "Unlock a one-time discount for a partner cafe or snack stop.",
+        cost: 25
+    },
+    {
+        id: "green-badge",
+        title: "Green Hero Profile Frame",
+        description: "Show off a special profile frame for your EcoQuest avatar.",
+        cost: 10
+    }
+];
+
 const STORAGE_KEY = "ecoquest-campus-adventure-state";
 
 const defaultState = {
     coins: 0,
     xp: 0,
-    streak: 1,
+    streak: 7,
     food: 0,
     energy: 0,
     water: 0,
     carbon: 0,
     bossProgress: 18,
-    completedQuestIds: []
+    completedQuestIds: [],
+    redeemedRewardIds: []
 };
 
 let state = loadState();
@@ -102,6 +130,7 @@ const questList = document.querySelector("#quest-list");
 const questTemplate = document.querySelector("#quest-template");
 const tierList = document.querySelector("#tier-list");
 const rewardList = document.querySelector("#reward-list");
+const redeemedList = document.querySelector("#redeemed-list");
 const leaderboardList = document.querySelector("#leaderboard-list");
 
 const coinTotal = document.querySelector("#coin-total");
@@ -120,6 +149,7 @@ const foodSaved = document.querySelector("#food-saved");
 const energySaved = document.querySelector("#energy-saved");
 const waterSaved = document.querySelector("#water-saved");
 const carbonSaved = document.querySelector("#carbon-saved");
+const shopCoinBalance = document.querySelector("#shop-coin-balance");
 const levelupOverlay = document.querySelector("#levelup-overlay");
 const levelupTitle = document.querySelector("#levelup-title");
 const levelupMessage = document.querySelector("#levelup-message");
@@ -138,7 +168,8 @@ function loadState() {
         return {
             ...defaultState,
             ...parsed,
-            completedQuestIds: Array.isArray(parsed.completedQuestIds) ? parsed.completedQuestIds : []
+            completedQuestIds: Array.isArray(parsed.completedQuestIds) ? parsed.completedQuestIds : [],
+            redeemedRewardIds: Array.isArray(parsed.redeemedRewardIds) ? parsed.redeemedRewardIds : []
         };
     } catch {
         return { ...defaultState };
@@ -276,6 +307,8 @@ function renderRewards() {
     const currentTier = getCurrentTier();
     tierList.innerHTML = "";
     rewardList.innerHTML = "";
+    redeemedList.innerHTML = "";
+    shopCoinBalance.textContent = `${state.coins} coins`;
 
     tiers.forEach((tier) => {
         const unlocked = state.xp >= tier.minXp;
@@ -295,14 +328,50 @@ function renderRewards() {
             </div>
         `;
         tierList.appendChild(tierRow);
+    });
 
+    rewardsCatalog.forEach((reward) => {
+        const alreadyRedeemed = state.redeemedRewardIds.includes(reward.id);
+        const canAfford = state.coins >= reward.cost;
         const rewardRow = document.createElement("article");
-        rewardRow.className = `reward-row${unlocked ? "" : " locked"}`;
+        rewardRow.className = "shop-row";
         rewardRow.innerHTML = `
-            <div class="reward-title">${tier.reward}</div>
-            <div class="reward-caption">${tier.name}</div>
+            <div>
+                <div class="reward-title">${reward.title}</div>
+                <div class="reward-caption">${reward.description}</div>
+                <span class="cost-pill">${reward.cost} coins</span>
+            </div>
         `;
+
+        const button = document.createElement("button");
+        button.className = "redeem-button";
+        button.textContent = alreadyRedeemed ? "Claimed" : "Redeem";
+        button.disabled = alreadyRedeemed || !canAfford;
+        button.addEventListener("click", () => redeemReward(reward.id));
+        rewardRow.appendChild(button);
         rewardList.appendChild(rewardRow);
+    });
+
+    const redeemedRewards = rewardsCatalog.filter((reward) => state.redeemedRewardIds.includes(reward.id));
+    if (redeemedRewards.length === 0) {
+        const emptyState = document.createElement("article");
+        emptyState.className = "redeemed-item";
+        emptyState.innerHTML = `
+            <div class="reward-title">No rewards claimed yet</div>
+            <div class="reward-caption">Spend coins on library perks, merch, and discounts to fill this inventory.</div>
+        `;
+        redeemedList.appendChild(emptyState);
+        return;
+    }
+
+    redeemedRewards.forEach((reward) => {
+        const claimedRow = document.createElement("article");
+        claimedRow.className = "redeemed-item";
+        claimedRow.innerHTML = `
+            <div class="reward-title">${reward.title}</div>
+            <div class="reward-caption">${reward.description}</div>
+        `;
+        redeemedList.appendChild(claimedRow);
     });
 }
 
@@ -340,6 +409,26 @@ function hideLevelUp() {
     confettiLayer.innerHTML = "";
 }
 
+function redeemReward(rewardId) {
+    const reward = rewardsCatalog.find((item) => item.id === rewardId);
+    if (!reward) {
+        return;
+    }
+
+    if (state.redeemedRewardIds.includes(rewardId) || state.coins < reward.cost) {
+        return;
+    }
+
+    state = {
+        ...state,
+        coins: state.coins - reward.cost,
+        redeemedRewardIds: [...state.redeemedRewardIds, rewardId]
+    };
+
+    saveState();
+    renderAll();
+}
+
 function toggleQuest(questId) {
     const quest = quests.find((item) => item.id === questId);
     if (!quest) {
@@ -361,7 +450,6 @@ function toggleQuest(questId) {
             0,
             Math.min(100, state.bossProgress + (isCompleted ? -quest.impact.boss : quest.impact.boss))
         ),
-        streak: Math.max(1, state.streak + (isCompleted ? -1 : 1)),
         completedQuestIds: isCompleted
             ? state.completedQuestIds.filter((id) => id !== questId)
             : [...state.completedQuestIds, questId]

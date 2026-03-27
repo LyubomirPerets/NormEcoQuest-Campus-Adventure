@@ -45,30 +45,34 @@ body {
 .brand-lockup {
     display: flex;
     align-items: flex-start;
-    gap: 18px;
+    gap: 10px;
 }
 
 .campus-logo {
     flex: 0 0 auto;
-    width: 148px;
-    height: 148px;
+    width: 240px;
+    height: 240px;
     display: grid;
     place-items: center;
     border-radius: 28px;
-    margin-top: -20px;
-    margin-left: -16px;
+    margin-top: -8px;
+    margin-left: -156px;
     background: transparent;
     border: 0;
     box-shadow: none;
 }
 
 .campus-logo img {
-    width: 136px;
-    height: 136px;
+    width: 220px;
+    height: 220px;
     object-fit: contain;
     display: block;
     image-rendering: auto;
     filter: none;
+}
+
+.hero-copy {
+    padding-top: 0;
 }
 
 .eyebrow,
@@ -251,7 +255,8 @@ body {
 .quest-list,
 .leaderboard-list,
 .tier-list,
-.reward-list {
+.reward-list,
+.redeemed-list {
     display: grid;
     gap: 14px;
     margin-top: 18px;
@@ -425,6 +430,71 @@ body {
 .reward-title {
     font-weight: 700;
     font-size: 1rem;
+}
+
+.shop-balance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(251, 246, 232, 0.08);
+    border: 2px solid rgba(242, 231, 200, 0.12);
+}
+
+.shop-balance strong {
+    color: var(--gold-500);
+    font-size: 1.1rem;
+}
+
+.shop-row,
+.redeemed-item {
+    display: grid;
+    gap: 14px;
+    align-items: center;
+    padding: 16px 18px;
+    border-radius: 20px;
+    border: 2px solid rgba(242, 231, 200, 0.12);
+    background: rgba(251, 246, 232, 0.06);
+}
+
+.shop-row {
+    grid-template-columns: 1fr auto;
+}
+
+.redeem-button {
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    min-width: 130px;
+    background: var(--gold-500);
+    color: var(--ink-900);
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgba(77, 55, 10, 0.6);
+}
+
+.redeem-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    box-shadow: none;
+}
+
+.cost-pill {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(255, 203, 71, 0.16);
+    color: var(--gold-500);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.redeemed-card {
+    grid-column: 1 / -1;
 }
 
 .levelup-overlay {
