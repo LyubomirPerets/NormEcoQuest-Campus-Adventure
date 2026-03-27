@@ -193,11 +193,34 @@ const defaultState = {
 let state = loadState();
 
 const dormCompetitionBase = [
-    { name: "Maya - Oak Hall", score: 76, note: "Compost combo active" },
-    { name: "Jordan - Laurel", score: 68, note: "3-day streak" },
-    { name: "Avery - Pine", score: 59, note: "Food saver badge" },
-    { name: "You - Maple", score: 62, note: "Dorm quest runner" },
-    { name: "Chris - Cedar", score: 38, note: "Water wizard" }
+    {
+        name: "Maple Hall",
+        score: 76,
+        note: "Best overall drop this week",
+        excels: ["Electricity down 12%", "Highest participation"],
+        needsWork: ["Water use still high", "Low food-sharing"]
+    },
+    {
+        name: "Laurel Hall",
+        score: 68,
+        note: "Most improved dorm",
+        excels: ["Water use down 9%", "Strong weekly quests"],
+        needsWork: ["Inconsistent electricity savings", "Needs more team participation"]
+    },
+    {
+        name: "Oak Hall",
+        score: 59,
+        note: "Food systems leader",
+        excels: ["Best fridge clean-out rate", "Highest food rescue"],
+        needsWork: ["High hot water use", "Needs better power-down habits"]
+    },
+    {
+        name: "Pine Hall",
+        score: 52,
+        note: "Steady mid-pack performance",
+        excels: ["Consistent recycling", "Balanced daily quests"],
+        needsWork: ["Low momentum", "Needs stronger dorm-wide participation"]
+    }
 ];
 
 const questList = document.querySelector("#quest-list");
@@ -302,7 +325,7 @@ function renderQuests() {
         title.textContent = quest.title;
         description.textContent = quest.description;
         impact.textContent = quest.impactText;
-        button.textContent = isCompleted ? "Undo" : "Complete";
+        button.textContent = isCompleted ? "Undo Quest" : "Complete Quest";
         button.classList.toggle("is-complete", isCompleted);
         card.classList.toggle("completed", isCompleted);
 
@@ -556,11 +579,11 @@ function renderLeaderboard() {
             <div class="dorm-detail-grid">
                 <div class="dorm-note good">
                     <strong>Excelling</strong><br>
-                    ${dorm.excels.join("<br>")}
+                    ${(dorm.excels ?? []).join("<br>")}
                 </div>
                 <div class="dorm-note risk">
                     <strong>Needs work</strong><br>
-                    ${dorm.needsWork.join("<br>")}
+                    ${(dorm.needsWork ?? []).join("<br>")}
                 </div>
             </div>
         `;
