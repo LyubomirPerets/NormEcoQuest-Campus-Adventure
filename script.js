@@ -633,7 +633,6 @@ function toggleQuest(questId) {
 }
 
 function resetState() {
-    state = loadState();
     state = { ...defaultState };
     window.localStorage.removeItem(STORAGE_KEY);
     hideLevelUp();
