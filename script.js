@@ -192,7 +192,7 @@ const defaultState = {
 
 let state = loadState();
 
-const leaderboardBase = [
+const dormCompetitionBase = [
     { name: "Maya - Oak Hall", score: 76, note: "Compost combo active" },
     { name: "Jordan - Laurel", score: 68, note: "3-day streak" },
     { name: "Avery - Pine", score: 59, note: "Food saver badge" },
