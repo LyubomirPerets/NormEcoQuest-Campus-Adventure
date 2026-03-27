@@ -4,10 +4,24 @@ const quests = [
         type: "daily",
         category: "Food Systems",
         title: "Cook with leftovers",
-        description: "Turn yesterday's extras into tonight's dinner and stop food waste before it starts.",
-        impactText: "Impact: saves 1 meal and avoids 1.1 lbs CO2",
+        description: "Use leftovers before they spoil.",
+        impactText: "Log servings saved.",
         coins: 10,
         xp: 12,
+        verificationFields: [
+            {
+                key: "servings",
+                label: "Servings saved",
+                type: "number",
+                placeholder: "e.g. 2"
+            },
+            {
+                key: "proof",
+                label: "Confirmed by",
+                type: "select",
+                options: ["Ate leftovers", "Shared with roommate", "Stored for later"]
+            }
+        ],
         impact: { food: 1, energy: 0.1, water: 0, carbon: 1.1, boss: 8 }
     },
     {
@@ -15,8 +29,8 @@ const quests = [
         type: "daily",
         category: "Energy Efficiency",
         title: "Turn off lights and appliances",
-        description: "Power down your room before heading out and chip away at the Energy Goblin.",
-        impactText: "Impact: enter the number of hours your lights were off to calculate savings.",
+        description: "Power down before heading out.",
+        impactText: "Enter hours off.",
         coins: 5,
         xp: 8,
         customInput: {
@@ -31,10 +45,24 @@ const quests = [
         type: "daily",
         category: "Circular Economy",
         title: "Share unused food",
-        description: "Post extra groceries for a roommate or friend before they expire.",
-        impactText: "Impact: saves 1 meal and supports campus sharing",
+        description: "Pass along extra food before it expires.",
+        impactText: "Log servings shared.",
         coins: 10,
         xp: 11,
+        verificationFields: [
+            {
+                key: "servings",
+                label: "Servings shared",
+                type: "number",
+                placeholder: "e.g. 3"
+            },
+            {
+                key: "proof",
+                label: "Confirmed by",
+                type: "select",
+                options: ["Claimed by roommate", "Donated to pantry", "Shared with friend"]
+            }
+        ],
         impact: { food: 1, energy: 0, water: 0, carbon: 1.3, boss: 10 }
     },
     {
@@ -42,8 +70,8 @@ const quests = [
         type: "daily",
         category: "Water + Energy",
         title: "Take a shorter shower",
-        description: "Keep it quick today to conserve hot water in your dorm or apartment.",
-        impactText: "Impact: saves 8 gallons and 0.3 kWh",
+        description: "Keep it quick today.",
+        impactText: "Saves 8 gal and 0.3 kWh.",
         coins: 5,
         xp: 9,
         impact: { food: 0, energy: 0.3, water: 8, carbon: 0.4, boss: 6 }
@@ -53,10 +81,24 @@ const quests = [
         type: "weekly",
         category: "Food Systems",
         title: "Weekly fridge clean-out",
-        description: "Check your fridge, rescue ingredients, and plan one meal before anything goes bad.",
-        impactText: "Impact: saves 2 meals and keeps waste out of the trash.",
+        description: "Rescue ingredients and plan a meal.",
+        impactText: "Log servings rescued.",
         coins: 18,
         xp: 24,
+        verificationFields: [
+            {
+                key: "servings",
+                label: "Servings rescued",
+                type: "number",
+                placeholder: "e.g. 4"
+            },
+            {
+                key: "proof",
+                label: "Confirmed by",
+                type: "select",
+                options: ["Meal planned", "Ingredients used", "Food shared before spoilage"]
+            }
+        ],
         impact: { food: 2, energy: 0, water: 0, carbon: 2.4, boss: 12 }
     },
     {
@@ -64,8 +106,8 @@ const quests = [
         type: "weekly",
         category: "Community Quest",
         title: "Complete a dorm sustainability challenge",
-        description: "Join a shared floor challenge and log one group action this week.",
-        impactText: "Impact: boosts the boss battle and earns team progress.",
+        description: "Log one shared dorm action.",
+        impactText: "Boosts dorm progress.",
         coins: 20,
         xp: 28,
         impact: { food: 0, energy: 1.2, water: 6, carbon: 1.8, boss: 16 }
@@ -76,31 +118,31 @@ const tiers = [
     {
         name: "The Owl",
         minXp: 0,
-        description: "Starter tier for students beginning their eco streak.",
+        description: "Starter tier.",
         reward: "Starter badge and daily eco tips"
     },
     {
         name: "Pickaxe Pro",
         minXp: 40,
-        description: "Bronze tier for students turning quick wins into habits.",
+        description: "Bronze habit builder.",
         reward: "10% rental gear discount"
     },
     {
         name: "Prospector",
         minXp: 90,
-        description: "Silver tier for strong challenge completion and team play.",
+        description: "Silver team player.",
         reward: "Dining bonus on select challenge days"
     },
     {
         name: "Norm's Inner Circle",
         minXp: 150,
-        description: "Green tier for standout campus sustainability leaders.",
+        description: "Campus sustainability leader.",
         reward: "Priority event access and profile flair"
     },
     {
         name: "The Golden Niner",
         minXp: 230,
-        description: "Top tier for players driving visible campus impact.",
+        description: "Top campus impact tier.",
         reward: "Top leaderboard spotlight and premium rewards"
     }
 ];
@@ -109,25 +151,25 @@ const rewardsCatalog = [
     {
         id: "library-late-pass",
         title: "Library Late-Night Pass",
-        description: "Redeem for one extended study-space reservation window.",
+        description: "Extended study-space reservation.",
         cost: 20
     },
     {
         id: "eco-sticker-pack",
         title: "49er Eco Sticker Pack",
-        description: "Campus-themed sustainability stickers and badge swag.",
+        description: "Campus eco sticker swag.",
         cost: 15
     },
     {
         id: "campus-discount",
         title: "Campus Cafe Discount",
-        description: "Unlock a one-time discount for a partner cafe or snack stop.",
+        description: "One-time partner cafe discount.",
         cost: 25
     },
     {
         id: "green-badge",
         title: "Green Hero Profile Frame",
-        description: "Show off a special profile frame for your EcoQuest avatar.",
+        description: "Special EcoQuest profile frame.",
         cost: 10
     }
 ];
@@ -154,30 +196,30 @@ const dormCompetitionBase = [
     {
         name: "Maple Hall",
         score: 76,
-        note: "Best overall utility drop this week",
-        excels: ["Electricity down 12%", "Highest quest participation", "Strong late-night light shutoff habits"],
-        needsWork: ["Water use still trending high", "Low food-sharing participation"]
+        note: "Best overall drop this week",
+        excels: ["Electricity down 12%", "Highest participation"],
+        needsWork: ["Water use still high", "Low food-sharing"]
     },
     {
         name: "Laurel Hall",
         score: 68,
         note: "Most improved dorm",
-        excels: ["Water use down 9%", "Great shower challenge engagement", "Strong weekly quest completion"],
-        needsWork: ["Electricity reduction is inconsistent", "More students need to join team quests"]
+        excels: ["Water use down 9%", "Strong weekly quests"],
+        needsWork: ["Inconsistent electricity savings", "Needs more team participation"]
     },
     {
         name: "Oak Hall",
         score: 59,
         note: "Food systems leader",
-        excels: ["Best fridge clean-out completion", "Highest food rescue activity", "Strong compost culture"],
-        needsWork: ["Gas and hot water use remain elevated", "Needs better evening power-down habits"]
+        excels: ["Best fridge clean-out rate", "Highest food rescue"],
+        needsWork: ["High hot water use", "Needs better power-down habits"]
     },
     {
         name: "Pine Hall",
         score: 52,
-        note: "Solid middle-of-pack performance",
-        excels: ["Consistent recycling actions", "Balanced daily quest engagement"],
-        needsWork: ["Lowest leaderboard momentum", "Needs stronger dorm-wide participation"]
+        note: "Steady mid-pack performance",
+        excels: ["Consistent recycling", "Balanced daily quests"],
+        needsWork: ["Low momentum", "Needs stronger dorm-wide participation"]
     }
 ];
 
@@ -283,39 +325,94 @@ function renderQuests() {
         title.textContent = quest.title;
         description.textContent = quest.description;
         impact.textContent = quest.impactText;
-        button.textContent = isCompleted ? "Undo quest" : `Complete ${quest.type} quest`;
+        button.textContent = isCompleted ? "Undo" : "Complete";
         button.classList.toggle("is-complete", isCompleted);
         card.classList.toggle("completed", isCompleted);
 
-        if (quest.customInput) {
+        if (quest.customInput || quest.verificationFields) {
             const controls = document.createElement("div");
             controls.className = "quest-controls";
 
-            const input = document.createElement("input");
-            input.className = "quest-input";
-            input.type = "number";
-            input.min = "1";
-            input.step = "1";
-            input.placeholder = quest.customInput.placeholder;
-            input.dataset.questId = quest.id;
-            input.value = state.customQuestInputs?.[quest.id] ?? "";
+            if (quest.customInput) {
+                const input = document.createElement("input");
+                input.className = "quest-input";
+                input.type = "number";
+                input.min = "1";
+                input.step = "1";
+                input.placeholder = quest.customInput.placeholder;
+                input.dataset.questId = quest.id;
+                input.value = state.customQuestInputs?.[quest.id]?.hours ?? "";
 
-            input.addEventListener("input", (event) => {
-                state = {
-                    ...state,
-                    customQuestInputs: {
-                        ...(state.customQuestInputs ?? {}),
-                        [quest.id]: event.target.value
+                input.addEventListener("input", (event) => {
+                    state = {
+                        ...state,
+                        customQuestInputs: {
+                            ...(state.customQuestInputs ?? {}),
+                            [quest.id]: {
+                                ...(state.customQuestInputs?.[quest.id] ?? {}),
+                                hours: event.target.value
+                            }
+                        }
+                    };
+                    saveState();
+                });
+
+                controls.appendChild(input);
+            }
+
+            if (quest.verificationFields) {
+                quest.verificationFields.forEach((field) => {
+                    let control;
+
+                    if (field.type === "select") {
+                        control = document.createElement("select");
+                        control.className = "quest-input quest-select";
+
+                        const placeholderOption = document.createElement("option");
+                        placeholderOption.value = "";
+                        placeholderOption.textContent = field.label;
+                        control.appendChild(placeholderOption);
+
+                        field.options.forEach((option) => {
+                            const optionElement = document.createElement("option");
+                            optionElement.value = option;
+                            optionElement.textContent = option;
+                            control.appendChild(optionElement);
+                        });
+                    } else {
+                        control = document.createElement("input");
+                        control.className = "quest-input";
+                        control.type = "number";
+                        control.min = "1";
+                        control.step = "1";
+                        control.placeholder = field.placeholder;
                     }
-                };
-                saveState();
-            });
+
+                    control.value = state.customQuestInputs?.[quest.id]?.[field.key] ?? "";
+                    control.addEventListener("input", (event) => {
+                        state = {
+                            ...state,
+                            customQuestInputs: {
+                                ...(state.customQuestInputs ?? {}),
+                                [quest.id]: {
+                                    ...(state.customQuestInputs?.[quest.id] ?? {}),
+                                    [field.key]: event.target.value
+                                }
+                            }
+                        };
+                        saveState();
+                    });
+
+                    controls.appendChild(control);
+                });
+            }
 
             const helper = document.createElement("p");
             helper.className = "quest-helper";
-            helper.textContent = "Tell EcoQuest how many hours the lights were off for a more accurate estimate.";
+            helper.textContent = quest.verificationFields
+                ? "Log servings + proof."
+                : "Log hours off.";
 
-            controls.appendChild(input);
             controls.appendChild(button);
             fragment.querySelector(".quest-copy").appendChild(helper);
             card.appendChild(controls);
@@ -323,7 +420,7 @@ function renderQuests() {
             button.addEventListener("click", () => toggleQuest(quest.id));
         }
 
-        if (quest.customInput) {
+        if (quest.customInput || quest.verificationFields) {
             button.addEventListener("click", () => toggleQuest(quest.id));
         }
 
@@ -356,7 +453,7 @@ function renderTierPanel() {
 
     tierName.textContent = currentTier.name;
     tierDescription.textContent = currentTier.description;
-    completionCount.textContent = `${state.completedQuestIds.length} of ${quests.length} quests completed`;
+    completionCount.textContent = `${state.completedQuestIds.length} / ${quests.length} done`;
     tierProgressFill.style.width = `${Math.max(0, Math.min(progressValue, 100))}%`;
     tierProgressText.textContent = nextTier
         ? `${state.xp} / ${nextTier.minXp} XP to ${nextTier.name}`
@@ -377,7 +474,7 @@ function getLeaderboard() {
             ? {
                 ...dorm,
                 score: dorm.score + playerBoost,
-                note: playerBoost > 0 ? "Your dorm is gaining momentum" : dorm.note
+                note: playerBoost > 0 ? "Your dorm is climbing" : dorm.note
             }
             : dorm
     );
@@ -496,7 +593,7 @@ function renderRewards() {
         emptyState.className = "redeemed-item";
         emptyState.innerHTML = `
             <div class="reward-title">No rewards claimed yet</div>
-            <div class="reward-caption">Spend coins on library perks, merch, and discounts to fill this inventory.</div>
+            <div class="reward-caption">Redeemed rewards will appear here.</div>
         `;
         redeemedList.appendChild(emptyState);
         return;
@@ -580,7 +677,7 @@ function toggleQuest(questId) {
     let questXp = quest.xp;
 
     if (quest.customInput) {
-        const rawValue = state.customQuestInputs?.[quest.id];
+        const rawValue = state.customQuestInputs?.[quest.id]?.hours;
         const hoursOff = Number(rawValue);
         const normalizedHours = Number.isFinite(hoursOff) && hoursOff > 0 ? hoursOff : 1;
         questImpact = {
@@ -591,6 +688,19 @@ function toggleQuest(questId) {
         };
         questCoins = 4 + Math.min(12, Math.round(normalizedHours * 2));
         questXp = 6 + Math.min(14, Math.round(normalizedHours * 2));
+    }
+
+    if (quest.verificationFields) {
+        const servingsValue = Number(state.customQuestInputs?.[quest.id]?.servings);
+        const normalizedServings = Number.isFinite(servingsValue) && servingsValue > 0 ? servingsValue : 1;
+        questImpact = {
+            ...questImpact,
+            food: normalizedServings,
+            carbon: Number((normalizedServings * 0.9).toFixed(1)),
+            boss: Math.min(20, questImpact.boss + normalizedServings)
+        };
+        questCoins = Math.max(questCoins, 6 + Math.min(16, normalizedServings * 2));
+        questXp = Math.max(questXp, 8 + Math.min(20, normalizedServings * 3));
     }
 
     state = {
