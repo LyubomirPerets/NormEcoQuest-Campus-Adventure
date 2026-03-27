@@ -190,6 +190,8 @@ const defaultState = {
     customQuestInputs: {}
 };
 
+let state = loadState();
+
 const leaderboardBase = [
     { name: "Maya - Oak Hall", score: 76, note: "Compost combo active" },
     { name: "Jordan - Laurel", score: 68, note: "3-day streak" },
