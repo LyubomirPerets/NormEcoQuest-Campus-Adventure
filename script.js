@@ -1,6 +1,7 @@
 const quests = [
     {
         id: "leftovers",
+        type: "daily",
         category: "Food Systems",
         title: "Cook with leftovers",
         description: "Turn yesterday's extras into tonight's dinner and stop food waste before it starts.",
@@ -11,16 +12,23 @@ const quests = [
     },
     {
         id: "lights",
+        type: "daily",
         category: "Energy Efficiency",
         title: "Turn off lights and appliances",
         description: "Power down your room before heading out and chip away at the Energy Goblin.",
-        impactText: "Impact: saves 0.8 kWh and avoids 0.7 lbs CO2",
+        impactText: "Impact: enter the number of hours your lights were off to calculate savings.",
         coins: 5,
         xp: 8,
+        customInput: {
+            label: "Hours off",
+            placeholder: "e.g. 3",
+            unit: "hours"
+        },
         impact: { food: 0, energy: 0.8, water: 0, carbon: 0.7, boss: 12 }
     },
     {
         id: "share-food",
+        type: "daily",
         category: "Circular Economy",
         title: "Share unused food",
         description: "Post extra groceries for a roommate or friend before they expire.",
@@ -31,6 +39,7 @@ const quests = [
     },
     {
         id: "shower",
+        type: "daily",
         category: "Water + Energy",
         title: "Take a shorter shower",
         description: "Keep it quick today to conserve hot water in your dorm or apartment.",
@@ -38,6 +47,28 @@ const quests = [
         coins: 5,
         xp: 9,
         impact: { food: 0, energy: 0.3, water: 8, carbon: 0.4, boss: 6 }
+    },
+    {
+        id: "fridge-check",
+        type: "weekly",
+        category: "Food Systems",
+        title: "Weekly fridge clean-out",
+        description: "Check your fridge, rescue ingredients, and plan one meal before anything goes bad.",
+        impactText: "Impact: saves 2 meals and keeps waste out of the trash.",
+        coins: 18,
+        xp: 16,
+        impact: { food: 2, energy: 0, water: 0, carbon: 2.4, boss: 12 }
+    },
+    {
+        id: "dorm-team",
+        type: "weekly",
+        category: "Community Quest",
+        title: "Complete a dorm sustainability challenge",
+        description: "Join a shared floor challenge and log one group action this week.",
+        impactText: "Impact: boosts the boss battle and earns team progress.",
+        coins: 20,
+        xp: 18,
+        impact: { food: 0, energy: 1.2, water: 6, carbon: 1.8, boss: 16 }
     }
 ];
 
@@ -106,14 +137,15 @@ const STORAGE_KEY = "ecoquest-campus-adventure-state";
 const defaultState = {
     coins: 0,
     xp: 0,
-    streak: 7,
+    streak: 1,
     food: 0,
     energy: 0,
     water: 0,
     carbon: 0,
     bossProgress: 18,
     completedQuestIds: [],
-    redeemedRewardIds: []
+    redeemedRewardIds: [],
+    customQuestInputs: {}
 };
 
 let state = loadState();
@@ -127,6 +159,7 @@ const leaderboardBase = [
 ];
 
 const questList = document.querySelector("#quest-list");
+const weeklyQuestList = document.querySelector("#weekly-quest-list");
 const questTemplate = document.querySelector("#quest-template");
 const tierList = document.querySelector("#tier-list");
 const rewardList = document.querySelector("#reward-list");
@@ -169,7 +202,10 @@ function loadState() {
             ...defaultState,
             ...parsed,
             completedQuestIds: Array.isArray(parsed.completedQuestIds) ? parsed.completedQuestIds : [],
-            redeemedRewardIds: Array.isArray(parsed.redeemedRewardIds) ? parsed.redeemedRewardIds : []
+            redeemedRewardIds: Array.isArray(parsed.redeemedRewardIds) ? parsed.redeemedRewardIds : [],
+            customQuestInputs: parsed.customQuestInputs && typeof parsed.customQuestInputs === "object"
+                ? parsed.customQuestInputs
+                : {}
         };
     } catch {
         return { ...defaultState };
@@ -205,6 +241,7 @@ function renderTabs() {
 
 function renderQuests() {
     questList.innerHTML = "";
+    weeklyQuestList.innerHTML = "";
 
     quests.forEach((quest) => {
         const fragment = questTemplate.content.cloneNode(true);
@@ -222,13 +259,55 @@ function renderQuests() {
         title.textContent = quest.title;
         description.textContent = quest.description;
         impact.textContent = quest.impactText;
-        button.textContent = isCompleted ? "Undo quest" : "Complete quest";
+        button.textContent = isCompleted ? "Undo quest" : `Complete ${quest.type} quest`;
         button.classList.toggle("is-complete", isCompleted);
         card.classList.toggle("completed", isCompleted);
 
-        button.addEventListener("click", () => toggleQuest(quest.id));
+        if (quest.customInput) {
+            const controls = document.createElement("div");
+            controls.className = "quest-controls";
 
-        questList.appendChild(fragment);
+            const input = document.createElement("input");
+            input.className = "quest-input";
+            input.type = "number";
+            input.min = "1";
+            input.step = "1";
+            input.placeholder = quest.customInput.placeholder;
+            input.dataset.questId = quest.id;
+            input.value = state.customQuestInputs?.[quest.id] ?? "";
+
+            input.addEventListener("input", (event) => {
+                state = {
+                    ...state,
+                    customQuestInputs: {
+                        ...(state.customQuestInputs ?? {}),
+                        [quest.id]: event.target.value
+                    }
+                };
+                saveState();
+            });
+
+            const helper = document.createElement("p");
+            helper.className = "quest-helper";
+            helper.textContent = "Tell EcoQuest how many hours the lights were off for a more accurate estimate.";
+
+            controls.appendChild(input);
+            controls.appendChild(button);
+            fragment.querySelector(".quest-copy").appendChild(helper);
+            card.appendChild(controls);
+        } else {
+            button.addEventListener("click", () => toggleQuest(quest.id));
+        }
+
+        if (quest.customInput) {
+            button.addEventListener("click", () => toggleQuest(quest.id));
+        }
+
+        if (quest.type === "weekly") {
+            weeklyQuestList.appendChild(fragment);
+        } else {
+            questList.appendChild(fragment);
+        }
     });
 }
 
@@ -437,18 +516,35 @@ function toggleQuest(questId) {
 
     const isCompleted = state.completedQuestIds.includes(questId);
     const previousTier = getCurrentTier();
+    let questImpact = quest.impact;
+    let questCoins = quest.coins;
+    let questXp = quest.xp;
+
+    if (quest.customInput) {
+        const rawValue = state.customQuestInputs?.[quest.id];
+        const hoursOff = Number(rawValue);
+        const normalizedHours = Number.isFinite(hoursOff) && hoursOff > 0 ? hoursOff : 1;
+        questImpact = {
+            ...quest.impact,
+            energy: Number((normalizedHours * 0.2).toFixed(1)),
+            carbon: Number((normalizedHours * 0.18).toFixed(1)),
+            boss: Math.min(20, 4 + Math.round(normalizedHours * 2))
+        };
+        questCoins = 4 + Math.min(12, Math.round(normalizedHours * 2));
+        questXp = 6 + Math.min(14, Math.round(normalizedHours * 2));
+    }
 
     state = {
         ...state,
-        coins: Math.max(0, state.coins + (isCompleted ? -quest.coins : quest.coins)),
-        xp: Math.max(0, state.xp + (isCompleted ? -quest.xp : quest.xp)),
-        food: Math.max(0, state.food + (isCompleted ? -quest.impact.food : quest.impact.food)),
-        energy: Math.max(0, state.energy + (isCompleted ? -quest.impact.energy : quest.impact.energy)),
-        water: Math.max(0, state.water + (isCompleted ? -quest.impact.water : quest.impact.water)),
-        carbon: Math.max(0, state.carbon + (isCompleted ? -quest.impact.carbon : quest.impact.carbon)),
+        coins: Math.max(0, state.coins + (isCompleted ? -questCoins : questCoins)),
+        xp: Math.max(0, state.xp + (isCompleted ? -questXp : questXp)),
+        food: Math.max(0, state.food + (isCompleted ? -questImpact.food : questImpact.food)),
+        energy: Math.max(0, state.energy + (isCompleted ? -questImpact.energy : questImpact.energy)),
+        water: Math.max(0, state.water + (isCompleted ? -questImpact.water : questImpact.water)),
+        carbon: Math.max(0, state.carbon + (isCompleted ? -questImpact.carbon : questImpact.carbon)),
         bossProgress: Math.max(
             0,
-            Math.min(100, state.bossProgress + (isCompleted ? -quest.impact.boss : quest.impact.boss))
+            Math.min(100, state.bossProgress + (isCompleted ? -questImpact.boss : questImpact.boss))
         ),
         completedQuestIds: isCompleted
             ? state.completedQuestIds.filter((id) => id !== questId)

@@ -262,6 +262,13 @@ body {
     margin-top: 18px;
 }
 
+.weekly-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 28px;
+}
+
 .quest-card,
 .leaderboard-row,
 .tier-row,
@@ -339,6 +346,45 @@ body {
     background: var(--leaf-500);
     color: var(--cream-100);
     box-shadow: 0 6px 0 rgba(20, 70, 20, 0.6);
+}
+
+.quest-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.quest-input {
+    width: 120px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border: 2px solid rgba(242, 231, 200, 0.2);
+    background: rgba(7, 26, 18, 0.4);
+    color: var(--cream-100);
+    font: inherit;
+}
+
+.quest-input::placeholder {
+    color: rgba(251, 246, 232, 0.5);
+}
+
+.quest-input::-webkit-outer-spin-button,
+.quest-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quest-input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.quest-helper {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: rgba(251, 246, 232, 0.7);
 }
 
 .boss-track {
