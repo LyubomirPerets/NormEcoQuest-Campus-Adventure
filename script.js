@@ -190,37 +190,12 @@ const defaultState = {
     customQuestInputs: {}
 };
 
-let state = loadState();
-
-const dormCompetitionBase = [
-    {
-        name: "Maple Hall",
-        score: 76,
-        note: "Best overall drop this week",
-        excels: ["Electricity down 12%", "Highest participation"],
-        needsWork: ["Water use still high", "Low food-sharing"]
-    },
-    {
-        name: "Laurel Hall",
-        score: 68,
-        note: "Most improved dorm",
-        excels: ["Water use down 9%", "Strong weekly quests"],
-        needsWork: ["Inconsistent electricity savings", "Needs more team participation"]
-    },
-    {
-        name: "Oak Hall",
-        score: 59,
-        note: "Food systems leader",
-        excels: ["Best fridge clean-out rate", "Highest food rescue"],
-        needsWork: ["High hot water use", "Needs better power-down habits"]
-    },
-    {
-        name: "Pine Hall",
-        score: 52,
-        note: "Steady mid-pack performance",
-        excels: ["Consistent recycling", "Balanced daily quests"],
-        needsWork: ["Low momentum", "Needs stronger dorm-wide participation"]
-    }
+const leaderboardBase = [
+    { name: "Maya - Oak Hall", score: 76, note: "Compost combo active" },
+    { name: "Jordan - Laurel", score: 68, note: "3-day streak" },
+    { name: "Avery - Pine", score: 59, note: "Food saver badge" },
+    { name: "You - Maple", score: 62, note: "Dorm quest runner" },
+    { name: "Chris - Cedar", score: 38, note: "Water wizard" }
 ];
 
 const questList = document.querySelector("#quest-list");
@@ -459,12 +434,75 @@ function renderTierPanel() {
         ? `${state.xp} / ${nextTier.minXp} XP to ${nextTier.name}`
         : `${state.xp} XP earned - max tier reached`;
 }
+function getImpactMessage(state) {
+    const messages = [];
+
+    if (state.food >= 3) {
+        messages.push(" You defeated the Food Waste Monster today!");
+    } else if (state.food > 0) {
+        messages.push(" You're chipping away at the Food Waste Monster.");
+    }
+
+    if (state.energy >= 2) {
+        messages.push("⚡ Big hit on the Energy Goblin!");
+    } else if (state.energy > 0) {
+        messages.push(" The Energy Goblin is losing power.");
+    }
+
+    if (state.water >= 10) {
+        messages.push(" The Water Wisp is shrinking fast!");
+    } else if (state.water > 0) {
+        messages.push(" Small splash against the Water Wisp.");
+    }
+
+    if (state.carbon >= 3) {
+        messages.push(" Huge CO₂ reduction — Norm would be proud.");
+    }
+
+    if (state.xp >= 100) {
+        messages.push(" Norm Boost Activated: You're becoming a campus legend.");
+    }
+
+    if (messages.length === 0) {
+        return " Start completing quests to see your impact grow!";
+    }
+
+    return messages.join(" ");
+}
 
 function renderImpact() {
+    // Update numeric values
     foodSaved.textContent = `${state.food} meals`;
     energySaved.textContent = `${state.energy.toFixed(1)} kWh`;
     waterSaved.textContent = `${state.water} gal`;
-    carbonSaved.textContent = `${state.carbon.toFixed(1)} lbs CO2`;
+    carbonSaved.textContent = `${state.carbon.toFixed(1)} lbs CO₂`;
+
+    // Personalized Mario-style message
+    const impactMessage = getImpactMessage(state);
+
+    // Create or update message element
+    let messageBox = document.querySelector("#impact-message");
+    if (!messageBox) {
+        messageBox = document.createElement("div");
+        messageBox.id = "impact-message";
+        messageBox.className = "impact-message";
+        document.querySelector("#impact-panel").appendChild(messageBox);
+    }
+    messageBox.textContent = impactMessage;
+
+    // Dynamic color feedback
+    const panel = document.querySelector("#impact-panel");
+
+    if (state.carbon > 3 || state.energy > 2) {
+        panel.style.borderColor = "#ffcc00"; // Mario yellow
+        panel.style.boxShadow = "0 0 12px #ffcc00";
+    } else if (state.food > 0 || state.water > 0) {
+        panel.style.borderColor = "#00ff66"; // bright green
+        panel.style.boxShadow = "0 0 12px #00ff66";
+    } else {
+        panel.style.borderColor = "#013201"; // default UNC Charlotte green
+        panel.style.boxShadow = "none";
+    }
 }
 
 function getLeaderboard() {
