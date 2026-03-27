@@ -1,10 +1,10 @@
 :root {
-    --forest-950: #0d2615;
-    --forest-900: #16361e;
-    --forest-800: #21502b;
-    --forest-700: #2d6a37;
-    --leaf-500: #6fcb62;
-    --leaf-300: #b9f08a;
+    --forest-950: #071a12;
+    --forest-900: #005035;
+    --forest-800: #0f5a43;
+    --forest-700: #127255;
+    --leaf-500: #1c8a63;
+    --leaf-300: #7fc8a9;
     --gold-500: #ffcb47;
     --gold-600: #efaf1f;
     --sky-400: #82d6ff;
@@ -25,10 +25,7 @@ body {
     min-height: 100vh;
     font-family: "Trebuchet MS", "Segoe UI", sans-serif;
     color: var(--cream-100);
-    background:
-        radial-gradient(circle at top left, rgba(255, 203, 71, 0.24), transparent 28%),
-        radial-gradient(circle at top right, rgba(130, 214, 255, 0.22), transparent 26%),
-        linear-gradient(180deg, #2f7a36 0%, #1a4621 55%, #0d2615 100%);
+    background: var(--forest-900);
 }
 
 .app-shell {
@@ -41,8 +38,37 @@ body {
     display: grid;
     gap: 18px;
     grid-template-columns: 1.7fr 1fr;
-    align-items: end;
+    align-items: start;
     margin-bottom: 18px;
+}
+
+.brand-lockup {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.campus-logo {
+    flex: 0 0 auto;
+    width: 148px;
+    height: 148px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    margin-top: -20px;
+    margin-left: -16px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.campus-logo img {
+    width: 136px;
+    height: 136px;
+    object-fit: contain;
+    display: block;
+    image-rendering: auto;
+    filter: none;
 }
 
 .eyebrow,
@@ -104,7 +130,7 @@ body {
 }
 
 .stat-chip {
-    background: linear-gradient(180deg, rgba(251, 246, 232, 0.18), rgba(242, 231, 200, 0.06));
+    background: rgba(7, 26, 18, 0.24);
     padding: 18px 16px;
     backdrop-filter: blur(8px);
 }
@@ -116,7 +142,7 @@ body {
 }
 
 .card {
-    background: linear-gradient(180deg, rgba(22, 54, 30, 0.94), rgba(13, 38, 21, 0.96));
+    background: rgba(7, 26, 18, 0.3);
     padding: 22px;
 }
 
@@ -152,11 +178,28 @@ body {
     border: 2px solid rgba(242, 231, 200, 0.18);
 }
 
+.reset-button {
+    margin-top: 14px;
+    border: 0;
+    border-radius: 14px;
+    padding: 11px 14px;
+    background: rgba(251, 246, 232, 0.1);
+    color: var(--cream-100);
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid rgba(242, 231, 200, 0.18);
+}
+
+.reset-button:hover,
+.reset-button:focus-visible {
+    background: rgba(251, 246, 232, 0.16);
+}
+
 .progress-fill {
     height: 100%;
     width: 0;
     border-radius: inherit;
-    background: linear-gradient(90deg, var(--gold-500), var(--leaf-500));
+    background: var(--gold-500);
     transition: width 220ms ease;
 }
 
@@ -169,7 +212,7 @@ body {
 
 .tab {
     padding: 14px 16px;
-    background: linear-gradient(180deg, var(--cream-200), #d6c18c);
+    background: var(--cream-200);
     color: var(--ink-900);
     font-weight: 700;
     cursor: pointer;
@@ -184,7 +227,7 @@ body {
 }
 
 .tab.active {
-    background: linear-gradient(180deg, var(--gold-500), var(--gold-600));
+    background: var(--gold-500);
 }
 
 .tab-panel {
@@ -237,8 +280,8 @@ body {
 }
 
 .quest-card.completed {
-    background: rgba(111, 203, 98, 0.16);
-    border-color: rgba(111, 203, 98, 0.64);
+    background: rgba(28, 138, 99, 0.24);
+    border-color: rgba(127, 200, 169, 0.64);
 }
 
 .quest-tag,
@@ -280,7 +323,7 @@ body {
     border-radius: 16px;
     padding: 14px 16px;
     min-width: 150px;
-    background: linear-gradient(180deg, var(--gold-500), var(--gold-600));
+    background: var(--gold-500);
     color: var(--ink-900);
     font-weight: 800;
     cursor: pointer;
@@ -288,7 +331,7 @@ body {
 }
 
 .quest-action.is-complete {
-    background: linear-gradient(180deg, var(--leaf-500), #4ca743);
+    background: var(--leaf-500);
     color: var(--cream-100);
     box-shadow: 0 6px 0 rgba(20, 70, 20, 0.6);
 }
@@ -298,7 +341,7 @@ body {
 }
 
 .boss-fill {
-    background: linear-gradient(90deg, var(--danger-500), var(--gold-500));
+    background: var(--danger-500);
 }
 
 .leaderboard-row,
@@ -353,7 +396,7 @@ body {
 
 .score-pill,
 .unlock-pill {
-    background: rgba(111, 203, 98, 0.18);
+    background: rgba(28, 138, 99, 0.24);
     color: var(--leaf-300);
 }
 
@@ -406,7 +449,7 @@ body {
     padding: 28px;
     border-radius: 28px;
     border: 3px solid rgba(255, 203, 71, 0.9);
-    background: linear-gradient(180deg, rgba(28, 72, 38, 0.98), rgba(13, 38, 21, 0.98));
+    background: var(--forest-900);
     box-shadow: var(--shadow-soft);
     text-align: center;
 }
@@ -429,7 +472,7 @@ body {
     border: 0;
     border-radius: 16px;
     padding: 14px 18px;
-    background: linear-gradient(180deg, var(--gold-500), var(--gold-600));
+    background: var(--gold-500);
     color: var(--ink-900);
     font-weight: 800;
     cursor: pointer;
@@ -484,6 +527,11 @@ body {
 @media (max-width: 620px) {
     .app-shell {
         width: min(100% - 20px, 1120px);
+    }
+
+    .brand-lockup {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .hero-stats {

@@ -74,7 +74,9 @@ const tiers = [
     }
 ];
 
-let state = {
+const STORAGE_KEY = "ecoquest-campus-adventure-state";
+
+const defaultState = {
     coins: 0,
     xp: 0,
     streak: 1,
@@ -85,6 +87,8 @@ let state = {
     bossProgress: 18,
     completedQuestIds: []
 };
+
+let state = loadState();
 
 const leaderboardBase = [
     { name: "Maya - Oak Hall", score: 76, note: "Compost combo active" },
@@ -116,6 +120,41 @@ const foodSaved = document.querySelector("#food-saved");
 const energySaved = document.querySelector("#energy-saved");
 const waterSaved = document.querySelector("#water-saved");
 const carbonSaved = document.querySelector("#carbon-saved");
+const levelupOverlay = document.querySelector("#levelup-overlay");
+const levelupTitle = document.querySelector("#levelup-title");
+const levelupMessage = document.querySelector("#levelup-message");
+const levelupClose = document.querySelector("#levelup-close");
+const confettiLayer = document.querySelector("#confetti-layer");
+const resetProgressButton = document.querySelector("#reset-progress");
+
+function loadState() {
+    try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+            return { ...defaultState };
+        }
+
+        const parsed = JSON.parse(saved);
+        return {
+            ...defaultState,
+            ...parsed,
+            completedQuestIds: Array.isArray(parsed.completedQuestIds) ? parsed.completedQuestIds : []
+        };
+    } catch {
+        return { ...defaultState };
+    }
+}
+
+function saveState() {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function resetState() {
+    state = { ...defaultState, completedQuestIds: [] };
+    window.localStorage.removeItem(STORAGE_KEY);
+    hideLevelUp();
+    renderAll();
+}
 
 function renderTabs() {
     const tabs = document.querySelectorAll(".tab");
@@ -276,6 +315,31 @@ function renderStats() {
     bossProgressFill.style.width = `${state.bossProgress}%`;
 }
 
+function showLevelUp(tier) {
+    levelupTitle.textContent = tier.name;
+    levelupMessage.textContent = `${tier.description} Reward unlocked: ${tier.reward}.`;
+    levelupOverlay.hidden = false;
+    confettiLayer.innerHTML = "";
+
+    const colors = ["#ffcb47", "#6fcb62", "#82d6ff", "#f26b5e", "#fbf6e8"];
+
+    for (let index = 0; index < 28; index += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[index % colors.length];
+        piece.style.animationDelay = `${Math.random() * 250}ms`;
+        piece.style.setProperty("--drift", `${Math.round((Math.random() - 0.5) * 180)}px`);
+        piece.style.transform = `rotate(${Math.round(Math.random() * 180)}deg)`;
+        confettiLayer.appendChild(piece);
+    }
+}
+
+function hideLevelUp() {
+    levelupOverlay.hidden = true;
+    confettiLayer.innerHTML = "";
+}
+
 function toggleQuest(questId) {
     const quest = quests.find((item) => item.id === questId);
     if (!quest) {
@@ -283,6 +347,7 @@ function toggleQuest(questId) {
     }
 
     const isCompleted = state.completedQuestIds.includes(questId);
+    const previousTier = getCurrentTier();
 
     state = {
         ...state,
@@ -302,7 +367,15 @@ function toggleQuest(questId) {
             : [...state.completedQuestIds, questId]
     };
 
+    saveState();
     renderAll();
+
+    if (!isCompleted) {
+        const currentTier = getCurrentTier();
+        if (currentTier.name !== previousTier.name) {
+            showLevelUp(currentTier);
+        }
+    }
 }
 
 function renderAll() {
@@ -313,6 +386,14 @@ function renderAll() {
     renderLeaderboard();
     renderRewards();
 }
+
+levelupClose.addEventListener("click", hideLevelUp);
+levelupOverlay.addEventListener("click", (event) => {
+    if (event.target === levelupOverlay) {
+        hideLevelUp();
+    }
+});
+resetProgressButton.addEventListener("click", resetState);
 
 renderTabs();
 renderAll();
