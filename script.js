@@ -194,33 +194,33 @@ function getImpactMessage(state) {
     const messages = [];
 
     if (state.food >= 3) {
-        messages.push("🍄 You defeated the Food Waste Monster today!");
+        messages.push(" You defeated the Food Waste Monster today!");
     } else if (state.food > 0) {
-        messages.push("🥫 You're chipping away at the Food Waste Monster.");
+        messages.push(" You're chipping away at the Food Waste Monster.");
     }
 
     if (state.energy >= 2) {
         messages.push("⚡ Big hit on the Energy Goblin!");
     } else if (state.energy > 0) {
-        messages.push("💡 The Energy Goblin is losing power.");
+        messages.push(" The Energy Goblin is losing power.");
     }
 
     if (state.water >= 10) {
-        messages.push("💧 The Water Wisp is shrinking fast!");
+        messages.push(" The Water Wisp is shrinking fast!");
     } else if (state.water > 0) {
-        messages.push("🚿 Small splash against the Water Wisp.");
+        messages.push(" Small splash against the Water Wisp.");
     }
 
     if (state.carbon >= 3) {
-        messages.push("🌍 Huge CO₂ reduction — Norm would be proud.");
+        messages.push(" Huge CO₂ reduction — Norm would be proud.");
     }
 
     if (state.xp >= 100) {
-        messages.push("⭐ Norm Boost Activated: You're becoming a campus legend.");
+        messages.push(" Norm Boost Activated: You're becoming a campus legend.");
     }
 
     if (messages.length === 0) {
-        return "🌱 Start completing quests to see your impact grow!";
+        return " Start completing quests to see your impact grow!";
     }
 
     return messages.join(" ");
